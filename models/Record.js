@@ -5,6 +5,7 @@ const recordSchema = new mongoose.Schema({
   customerName: String,
   mobile: String,
   place: String,
+  bank: String,
   to: String,
   appDate: String,
   status: String,
