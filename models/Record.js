@@ -10,9 +10,11 @@ const recordSchema = new mongoose.Schema({
   appDate: String,
   status: String,
   remarks: String,
+  natureOfBsns: String,  // 👈 New Field
+  styleOfBsns: String,   // 👈 New Field
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User', // Make sure you have a User model
+    ref: 'User',
     required: true,
   },
 }, { timestamps: true });
