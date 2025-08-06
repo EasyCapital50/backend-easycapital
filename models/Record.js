@@ -10,6 +10,11 @@ const recordSchema = new mongoose.Schema({
   appDate: String,
   status: String,
   remarks: String,
+  createdBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User', // Make sure you have a User model
+    required: true,
+  },
 }, { timestamps: true });
 
 module.exports = mongoose.model('Record', recordSchema);

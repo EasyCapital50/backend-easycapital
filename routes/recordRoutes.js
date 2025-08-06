@@ -4,18 +4,18 @@ const authorizeRoles = require('../middleware/authorize');
 const {
   getRecords,
   addRecord,
-  deleteRecord
+  deleteRecord,
+  updateRecord
 } = require('../controllers/recordController');
 
 const router = express.Router();
 
-// 🔐 Authenticated users can view records
 router.get('/get', authenticate, getRecords);
 
-// 🛡️ Only superadmin or staff can add records
 router.post('/post', authenticate, authorizeRoles('superadmin', 'staff'), addRecord);
 
-// ❌ Only superadmin can delete records
 router.delete('/:id', authenticate, authorizeRoles('superadmin'), deleteRecord);
+
+router.put('/:id', authenticate, authorizeRoles('superadmin', 'staff'), updateRecord); // ✅
 
 module.exports = router;
