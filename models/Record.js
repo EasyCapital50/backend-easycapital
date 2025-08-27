@@ -15,7 +15,7 @@ const recordSchema = new mongoose.Schema({
   company: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Company',
-    required: false,
+    required: true,
   },
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
