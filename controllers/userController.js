@@ -41,28 +41,51 @@ exports.logout = async (req, res) => {
 
 // ➕ Add new user (superadmin only)
 exports.addUser = async (req, res) => {
-  const { name, username, password, role } = req.body;
   try {
-    const existing = await User.findOne({ username });
-    if (existing) return res.status(400).json({ message: 'Username already exists' });
+    const { name, username, password, role } = req.body;
 
-    const user = new User({ name, username, password, role });
+    // superadmin can only add users to their own company
+    if (req.user.role !== 'superadmin') {
+      return res.status(403).json({ message: 'Only superadmins can add users' });
+    }
+
+    const existing = await User.findOne({ username, company: req.user.company });
+if (existing) return res.status(400).json({ message: 'Username already exists in this company' });
+
+
+    // assign user to same company as superadmin
+    const user = new User({
+      name,
+      username,
+      password,
+      role,
+      company: req.user.company
+    });
+
     await user.save();
-
     res.status(201).json(user);
+
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
 };
 
+
 exports.getUsers = async (req, res) => {
   try {
-    const users = await User.find({}, '-password'); // exclude password field
+    let filter = {};
+    if (req.user.role === 'superadmin') {
+      filter.company = req.user.company; // restrict to company
+    }
+
+    const users = await User.find(filter, '-password').populate('company', 'name');
     res.json(users);
+
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 };
+
 
 // 🔄 Edit user (superadmin only)
 exports.editUser = async (req, res) => {

@@ -5,10 +5,18 @@ exports.getRecords = async (req, res) => {
     let records;
 
     if (req.user.role === 'staff') {
-      // Staff can only view their own entries
-      records = await Record.find({ createdBy: req.user.id });
-    } else {
-      // Superadmin and User can view all
+      // staff can only see their own records in their company
+      records = await Record.find({
+        company: req.user.company,
+        createdBy: req.user.id
+      }).populate('createdBy', 'username');
+    } else if (req.user.role === 'superadmin' || req.user.role === 'user') {
+      // superadmin & users see all records in their company
+      records = await Record.find({
+        company: req.user.company
+      }).populate('createdBy', 'username');
+    } else if (req.user.role === 'mainadmin') {
+      // mainadmin sees everything across all companies
       records = await Record.find().populate('createdBy', 'username');
     }
 
@@ -20,11 +28,13 @@ exports.getRecords = async (req, res) => {
 
 
 
+
 exports.addRecord = async (req, res) => {
   try {
     const newRecord = new Record({
       ...req.body,
-      createdBy: req.user.id, // 👈 attach logged-in user
+      createdBy: req.user.id,
+      company: req.user.company, // 👈 attach user’s company
     });
     await newRecord.save();
     res.status(201).json(newRecord);
@@ -32,6 +42,7 @@ exports.addRecord = async (req, res) => {
     res.status(400).json({ error: err.message });
   }
 };
+
 
 
 exports.updateRecord = async (req, res) => {

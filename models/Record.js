@@ -10,8 +10,13 @@ const recordSchema = new mongoose.Schema({
   appDate: String,
   status: String,
   remarks: String,
-  natureOfBsns: String,  // 👈 New Field
-  styleOfBsns: String,   // 👈 New Field
+  natureOfBsns: String,  
+  styleOfBsns: String,   
+  company: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Company',
+    required: false,
+  },
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
